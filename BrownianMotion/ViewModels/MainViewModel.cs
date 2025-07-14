@@ -31,12 +31,11 @@ public class MainViewModel : INotifyPropertyChanged
 
     private void Simulate()
     {
-        if (InitialPrice <= 0 || Sigma <= 0 || NumDays <= 0)
+        if (InitialPrice <= 0 || Sigma <= 0 || NumDays <= 0 || NumSimulations <= 0)
         {
             Application.Current.MainPage.DisplayAlert("Erro", "Preencha todos os campos corretamente.", "OK");
             return;
         }
-
 
         double sigmaAnual = Sigma / 100.0;
         double meanAnual = Mean / 100.0;
@@ -44,11 +43,42 @@ public class MainViewModel : INotifyPropertyChanged
         double sigmaDiario = sigmaAnual / Math.Sqrt(252);
         double meanDiario = meanAnual / 252;
 
-        Prices = BrownianMotionService.GenerateBrownianMotion(
-            sigmaDiario, meanDiario, InitialPrice, NumDays);
+        AllSimulations = new List<double[]>();
+
+        for (int i = 0; i < NumSimulations; i++)
+        {
+            var simulation = BrownianMotionService.GenerateBrownianMotion(
+                sigmaDiario, meanDiario, InitialPrice, NumDays);
+
+            AllSimulations.Add(simulation);
+        }
     }
+
 
     public event PropertyChangedEventHandler PropertyChanged;
     protected void OnPropertyChanged(string name) =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+    private int _numSimulations = 1;
+
+    public int NumSimulations
+    {
+        get => _numSimulations;
+        set
+        {
+            _numSimulations = value;
+            OnPropertyChanged(nameof(NumSimulations));
+        }
+    }
+
+    private List<double[]> _allSimulations;
+    public List<double[]> AllSimulations
+    {
+        get => _allSimulations;
+        set
+        {
+            _allSimulations = value;
+            OnPropertyChanged(nameof(AllSimulations));
+        }
+    }
 }
