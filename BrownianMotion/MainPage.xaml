@@ -1,0 +1,55 @@
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BrownianMotion.MainPage"
+             xmlns:viewmodel="clr-namespace:BrownianMotion.ViewModels"
+             xmlns:skia="clr-namespace:SkiaSharp.Views.Maui.Controls;assembly=SkiaSharp.Views.Maui.Controls"
+             BackgroundColor="#1E1E1E">
+
+    <Grid RowDefinitions="Auto,*" ColumnDefinitions="2*,1*">
+
+
+        <Border Grid.Column="0"
+                Margin="20"
+                Background="#2B2B2B"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 20"
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand">
+
+            <skia:SKCanvasView x:Name="ChartView"
+                               PaintSurface="OnCanvasViewPaintSurface"
+                               BackgroundColor="#2B2B2B"
+                               VerticalOptions="FillAndExpand"
+                               HorizontalOptions="FillAndExpand" />
+        </Border>
+
+
+        <StackLayout Grid.Column="1"
+                     Padding="20"
+                     Spacing="15"
+                     VerticalOptions="Center"
+                     HorizontalOptions="Center">
+
+            <Label Text="Preço inicial" TextColor="White"/>
+            <Entry Text="{Binding InitialPrice}" Keyboard="Numeric" BackgroundColor="White" TextColor="Black"/>
+
+            <Label Text="Volatilidade média(%)" TextColor="White"/>
+            <Entry Text="{Binding Sigma}" Keyboard="Numeric" BackgroundColor="White" TextColor="Black"/>
+
+            <Label Text="Retorno médio(%)" TextColor="White"/>
+            <Entry Text="{Binding Mean}" Keyboard="Numeric" BackgroundColor="White" TextColor="Black"/>
+
+            <Label Text="Tempo(dias)" TextColor="White"/>
+            <Entry Text="{Binding NumDays}" Keyboard="Numeric" BackgroundColor="White" TextColor="Black"/>
+
+            <Button Text="Gerar simulação"
+                    Command="{Binding SimulateCommand}"
+                    BackgroundColor="#D6CFFF"
+                    TextColor="Black"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    Padding="10,5"/>
+        </StackLayout>
+    </Grid>
+
+</ContentPage>
