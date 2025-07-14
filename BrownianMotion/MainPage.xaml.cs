@@ -29,21 +29,107 @@ public partial class MainPage : ContentPage
         canvas.Clear(SKColors.Transparent);
 
         var allSimulations = _viewModel.AllSimulations;
-
-        if (allSimulations == null || !allSimulations.Any())
-            return;
+        if (allSimulations == null || !allSimulations.Any()) return;
 
         float width = e.Info.Width;
         float height = e.Info.Height;
 
-        // Obter o valor máximo e mínimo global de todas as simulações
         double globalMax = allSimulations.Max(sim => sim.Max());
         double globalMin = allSimulations.Min(sim => sim.Min());
         double globalRange = globalMax - globalMin;
 
-        // Definir cores diferentes para cada simulação
-        SKColor[] colors = { SKColors.LightBlue, SKColors.Yellow, SKColors.Orange, SKColors.Green, SKColors.Purple };
+        // Margens para eixos
+        float marginLeft = 60;
+        float marginBottom = 40;
 
+        var graphWidth = width - marginLeft - 10;
+        var graphHeight = height - marginBottom - 10;
+
+        // Linhas de grade
+        var gridPaint = new SKPaint
+        {
+            Color = SKColors.Gray,
+            StrokeWidth = 1,
+            PathEffect = SKPathEffect.CreateDash(new float[] { 10, 10 }, 0)
+        };
+
+        // Fonte base
+        var labelFont = new SKFont(SKTypeface.Default, 18);
+        var axisFont = new SKFont(SKTypeface.Default, 12);
+
+        // Paint dos textos dos eixos
+        var yAxisLabelPaint = new SKPaint
+        {
+            Color = SKColors.White,
+            IsAntialias = true,
+            FakeBoldText = true
+        };
+
+        var xAxisLabelPaint = new SKPaint
+        {
+            Color = SKColors.White,
+            IsAntialias = true,
+            FakeBoldText = true,
+            TextAlign = SKTextAlign.Center
+        };
+
+        // Eixo Y (preço)
+        int yLabels = 5;
+        for (int i = 0; i <= yLabels; i++)
+        {
+            float y = 10 + graphHeight - (graphHeight / yLabels) * i;
+            canvas.DrawLine(marginLeft, y, width, y, gridPaint);
+
+            var priceLabel = globalMin + (globalRange / yLabels) * i;
+
+            var labelPaint = new SKPaint
+            {
+                Color = SKColors.White,
+                IsAntialias = true
+            };
+
+            canvas.DrawText($"{priceLabel:F2}", 5, y + 5, labelFont, labelPaint);
+        }
+
+        // Eixo X (tempo)
+        int xLabels = 5;
+        for (int i = 0; i <= xLabels; i++)
+        {
+            float x = marginLeft + (graphWidth / xLabels) * i;
+            canvas.DrawLine(x, 10, x, height - marginBottom, gridPaint);
+
+            var dayLabel = (_viewModel.NumDays / xLabels) * i;
+
+            var labelPaint = new SKPaint
+            {
+                Color = SKColors.White,
+                IsAntialias = true,
+                TextAlign = SKTextAlign.Center
+            };
+
+            canvas.DrawText($"{dayLabel}", x, height - marginBottom + 20, labelFont, labelPaint);
+        }
+
+        // Texto rotacionado do eixo Y ("Preço")
+        canvas.Save();
+
+        float yLabelX = 20; // distância da borda esquerda
+        float yLabelY = 10 + graphHeight / 2 + 20; // centro do gráfico verticalmente
+
+        canvas.Translate(yLabelX, yLabelY);
+        canvas.RotateDegrees(-90);
+
+        canvas.DrawText("Preço (R$)", 0, 0, axisFont, yAxisLabelPaint);
+
+        canvas.Restore();
+
+        // Texto do eixo X ("Tempo (dias)")
+        canvas.DrawText("Tempo (dias)", marginLeft + graphWidth / 2, height - 5, axisFont, xAxisLabelPaint);
+
+
+
+        // Cores das simulações
+        SKColor[] colors = { SKColors.LightBlue, SKColors.Yellow, SKColors.Orange, SKColors.Green, SKColors.Purple };
         int colorIndex = 0;
 
         foreach (var prices in allSimulations)
@@ -60,8 +146,8 @@ public partial class MainPage : ContentPage
 
             for (int i = 0; i < prices.Length; i++)
             {
-                float x = (float)i / (prices.Length - 1) * width;
-                float y = height - (float)((prices[i] - globalMin) / globalRange * height);
+                float x = marginLeft + (float)i / (prices.Length - 1) * graphWidth;
+                float y = 10 + graphHeight - (float)((prices[i] - globalMin) / globalRange * graphHeight);
 
                 if (i == 0)
                     path.MoveTo(x, y);
@@ -70,9 +156,9 @@ public partial class MainPage : ContentPage
             }
 
             canvas.DrawPath(path, paint);
-
             colorIndex++;
         }
     }
+
 
 }
