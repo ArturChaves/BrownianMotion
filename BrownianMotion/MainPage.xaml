@@ -42,6 +42,10 @@
             <Label Text="Tempo(dias)" TextColor="White"/>
             <Entry Text="{Binding NumDays}" Keyboard="Numeric" BackgroundColor="White" TextColor="Black"/>
 
+            <Label Text="Número de simulações" TextColor="White"/>
+            <Entry Text="{Binding NumSimulations}" Keyboard="Numeric" BackgroundColor="White" TextColor="Black"/>
+
+
             <Button Text="Gerar simulação"
                     Command="{Binding SimulateCommand}"
                     BackgroundColor="#D6CFFF"
